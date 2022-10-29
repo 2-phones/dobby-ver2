@@ -1,9 +1,12 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseDeleteMasterEntity } from './Base.entity';
 
 @Entity('users')
 export class UsersEntity extends BaseDeleteMasterEntity {
   @Index('EMAIL_UNIQUE', { unique: true })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
+  id: number;
+
   @Column({ type: 'varchar', name: 'email', length: 30 })
   email: string;
 

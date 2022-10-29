@@ -7,3 +7,9 @@ export class CreateUserDto {
   email: string;
   profile_url: string;
 }
+
+export class CreateTokenDto {
+  @IsString()
+  @IsNotEmpty()
+  token: string;
+}

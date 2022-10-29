@@ -1,22 +1,24 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { Users } from 'src/user/user.entity';
+import { UsersEntity } from 'src/entities/Users.entity';
+import { UsersRefreshTokensEntity } from 'src/entities/UsersRefreshTokens.entity';
+import { UserService } from 'src/user/service/user.service';
+import { Repository } from 'typeorm';
 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: 'secret12',
+      secret: `secret1`,
       signOptions: {
         expiresIn: '30m',
       },
     }),
-    TypeOrmModule.forFeature([Users]),
+    TypeOrmModule.forFeature([UsersEntity, UsersRefreshTokensEntity]),
   ],
   providers: [AuthService],
   exports: [AuthService],

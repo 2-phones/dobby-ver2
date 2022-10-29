@@ -1,13 +1,12 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { Users } from 'src/user/user.entity';
 
 const config: TypeOrmModuleOptions = {
-  type: 'mariadb',
-  host: process.env.RDBMS_HOST,
+  type: 'mysql',
+  host: 'db-c7uqk.pub-cdb.ntruss.com',
   port: 3306,
-  username: process.env.RDBMS_USER,
-  password: process.env.RDBMS_PASSWORD,
-  database: process.env.RDBMS_DATABASE,
+  username: 'snaps',
+  password: 'snaps123!',
+  database: 'DobbyTestA',
   entities: [`${__dirname}/./entities/**.entity.{ts,js}`],
   synchronize: false, // 스키마 생성
   autoLoadEntities: true,

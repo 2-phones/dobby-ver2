@@ -1,19 +1,28 @@
-import { CreateUserDto } from './../user/user.dto';
-import { Users } from 'src/user/user.entity';
+import { CreateUserDto, CreateTokenDto } from './../user/user.dto';
+import { UsersEntity } from 'src/entities/Users.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import { AuthInfoDto } from './auth.dto';
+import { UsersRefreshTokensEntity } from 'src/entities/UsersRefreshTokens.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
-    @InjectRepository(Users)
-    private usersRepository: Repository<Users>,
+    @InjectRepository(UsersEntity)
+    private usersRepository: Repository<UsersEntity>,
+
+    @InjectRepository(UsersRefreshTokensEntity)
+    private tokenRepository: Repository<UsersRefreshTokensEntity>,
   ) {}
+
+  saveToken(refreshToken: CreateTokenDto) {
+    const data = { ...refreshToken, ip: '1,2,34', expired_at: new Date() };
+    this.tokenRepository.save(data);
+  }
 
   // 토큰 발급
   async createToken(email: any): Promise<any> {
@@ -25,6 +34,8 @@ export class AuthService {
         expiresIn: '14d',
       },
     );
+
+    this.saveToken({ token: refreshToken });
     return { accessToken, refreshToken };
   }
 
@@ -42,6 +53,7 @@ export class AuthService {
   // 소셜 체크
   async socialLogin(data: AuthInfoDto): Promise<any> {
     const type = data.social_type;
+    console.log(data);
     try {
       const profile =
         type === 'kakao'
@@ -49,10 +61,10 @@ export class AuthService {
           : type === 'google'
           ? await this.google(data)
           : await this.apple(data);
-
+      console.log(profile);
       const token = await this.createToken(profile.email);
       if (!this.getUser(profile.email)) this.createUser(profile);
-      return { ...profile, ...token };
+      return token;
     } catch (err) {
       return err;
     }

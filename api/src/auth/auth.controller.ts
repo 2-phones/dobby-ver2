@@ -21,6 +21,7 @@ export class AuthController {
   @Post()
   async login(@Body() data: AuthInfoDto, @Res() res: Response): Promise<any> {
     const userProfile = await this.authService.socialLogin(data);
+    console.log(userProfile);
     return res.send(userProfile);
   }
 }
