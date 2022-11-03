@@ -8,6 +8,8 @@ import { UsersEntity } from 'src/entities/Users.entity';
 import { UsersRefreshTokensEntity } from 'src/entities/UsersRefreshTokens.entity';
 import { UserService } from 'src/user/service/user.service';
 import { Repository } from 'typeorm';
+import { UserEntity } from 'src/entities/User.entity';
+import { UserRefreshTokenEntity } from 'src/entities/UserRefresh.entity';
 
 @Module({
   imports: [
@@ -18,7 +20,12 @@ import { Repository } from 'typeorm';
         expiresIn: '30m',
       },
     }),
-    TypeOrmModule.forFeature([UsersEntity, UsersRefreshTokensEntity]),
+    TypeOrmModule.forFeature([
+      UsersEntity,
+      UsersRefreshTokensEntity,
+      UserRefreshTokenEntity,
+      UserEntity,
+    ]),
   ],
   providers: [AuthService],
   exports: [AuthService],
