@@ -7,21 +7,28 @@ import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import { AuthInfoDto } from './auth.dto';
 import { UsersRefreshTokensEntity } from 'src/entities/UsersRefreshTokens.entity';
+import { UserEntity } from 'src/entities/User.entity';
+import { UserRefreshTokenEntity } from 'src/entities/UserRefresh.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
-    @InjectRepository(UsersEntity)
-    private usersRepository: Repository<UsersEntity>,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
 
-    @InjectRepository(UsersRefreshTokensEntity)
-    private tokenRepository: Repository<UsersRefreshTokensEntity>,
+    @InjectRepository(UserRefreshTokenEntity)
+    private tokenRepository: Repository<UserRefreshTokenEntity>,
   ) {}
 
-  saveToken(refreshToken: CreateTokenDto) {
-    const data = { ...refreshToken, ip: '1,2,34', expired_at: new Date() };
-    this.tokenRepository.save(data);
+  saveToken(token: CreateTokenDto) {
+    const data = 'refreshToken';
+
+    this.tokenRepository.save(token);
+  }
+
+  async checkToken(token: string) {
+    return await this.tokenRepository.findOne({ where: { token } });
   }
 
   // 토큰 발급
@@ -35,35 +42,37 @@ export class AuthService {
       },
     );
 
-    this.saveToken({ token: refreshToken });
+    !(await this.checkToken) ? this.saveToken({ token: refreshToken }) : null;
     return { accessToken, refreshToken };
   }
 
-  getUser(email: string) {
-    const user = this.usersRepository.findOne({
-      where: { email },
-    });
-    return user ? true : false;
+  // boolean? 함수명
+  async checkUser(email: string): Promise<any> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    console.log(user);
+    return user.email ? true : false;
   }
 
   createUser(profile: CreateUserDto) {
-    this.usersRepository.save(profile);
+    this.userRepository.save(profile);
   }
 
   // 소셜 체크
   async socialLogin(data: AuthInfoDto): Promise<any> {
     const type = data.social_type;
-    console.log(data);
     try {
       const profile =
         type === 'kakao'
           ? await this.kakao(data)
           : type === 'google'
           ? await this.google(data)
-          : await this.apple(data);
-      console.log(profile);
+          : type === 'apple'
+          ? await this.apple(data)
+          : 'err';
+      if (!profile.email) return { statusCode: 400, message: 'Info error' };
       const token = await this.createToken(profile.email);
-      if (!this.getUser(profile.email)) this.createUser(profile);
+      const yesorno = await this.checkUser(profile.email);
+      if (!yesorno) this.createUser(profile);
       return token;
     } catch (err) {
       return err;
