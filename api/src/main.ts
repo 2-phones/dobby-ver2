@@ -5,7 +5,6 @@ import Helmet from 'helmet';
 
 async function dobbyServer() {
   const app = await NestFactory.create(AppModule);
-
   app.use(Helmet());
   app.enableCors({
     origin: true,
@@ -20,7 +19,6 @@ async function dobbyServer() {
       transform: true,
     }),
   );
-
   await app.listen(process.env.PORT || 8080);
 }
 dobbyServer();
