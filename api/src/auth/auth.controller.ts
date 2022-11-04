@@ -10,18 +10,18 @@ import {
 import { Response } from 'express';
 import { AuthInfoDto } from './auth.dto';
 
-@Controller('login')
+@Controller('api/login')
 export class AuthController {
   constructor(private authService: AuthService) {}
   @Get()
   getAll() {
-    return 'helloworld';
+    return 'Success !';
   }
 
   @Post()
-  async login(@Body() data: AuthInfoDto, @Res() res: Response): Promise<any> {
+  async login(@Body() data: AuthInfoDto): Promise<any> {
     const userProfile = await this.authService.socialLogin(data);
-    console.log(userProfile);
-    return res.send(userProfile);
+    return userProfile;
+    // 리턴바로
   }
 }
