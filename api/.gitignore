@@ -5,6 +5,7 @@
 
 # Logs
 .env
+ormconfig.ts
 
 # OS
 .DS_Store
