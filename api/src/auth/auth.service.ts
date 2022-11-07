@@ -49,8 +49,7 @@ export class AuthService {
   // boolean? 함수명
   async checkUser(email: string): Promise<any> {
     const user = await this.userRepository.findOne({ where: { email } });
-    console.log(user);
-    return user.email ? true : false;
+    return user ? true : false;
   }
 
   createUser(profile: CreateUserDto) {
