@@ -5,6 +5,8 @@
 
 # Logs
 .env
+
+# files
 ormconfig.ts
 
 # OS
